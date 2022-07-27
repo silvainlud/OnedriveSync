@@ -1,4 +1,3 @@
-using DesktopNotifications;
 using KeepassSync.Core.Business;
 
 namespace KeepassSync.Worker;
@@ -9,19 +8,17 @@ public class Worker : BackgroundService
 	private readonly List<FileSystemWatcher> _fileWatchers = new();
 	private readonly IFileManagerService _fileManagerService;
 	private readonly IFileBackupService _fileBackupService;
-	private readonly INotificationManager _notificationManager;
 
 	private readonly Dictionary<string, string?> _mappedTargetFiles;
 
 	static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
-	public Worker(ILogger<Worker> logger, IFileManagerService fileManagerService, IFileBackupService fileBackupService, Dictionary<string, string?> mappedTargetFiles, INotificationManager notificationManager)
+	public Worker(ILogger<Worker> logger, IFileManagerService fileManagerService, IFileBackupService fileBackupService, Dictionary<string, string?> mappedTargetFiles)
 	{
 		_logger = logger;
 		_fileManagerService = fileManagerService;
 		_fileBackupService = fileBackupService;
 		_mappedTargetFiles = mappedTargetFiles;
-		_notificationManager = notificationManager;
 	}
 
 	protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -101,11 +98,6 @@ public class Worker : BackgroundService
 					Thread.Sleep(1000);
 					await _fileManagerService.Download(destination, e.FullPath);
 
-					await _notificationManager.ShowNotification(new Notification()
-					{
-						Title = "Onedrive Sync",
-						Body = e.FullPath + " a été synchronisé."
-					});
 				}
 				catch (Exception exception)
 				{
