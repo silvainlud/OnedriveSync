@@ -1,4 +1,4 @@
-namespace KeepassSyncService;
+namespace KeepassSync.Worker;
 
 public class Worker : BackgroundService
 {

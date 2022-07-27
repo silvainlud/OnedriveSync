@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeepassSyncService", "KeepassSyncService\KeepassSyncService.csproj", "{2D291083-5D15-4AAB-AEA4-B930B14747B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeepassSync.Worker", "KeepassSync.Worker\KeepassSync.Worker.csproj", "{2D291083-5D15-4AAB-AEA4-B930B14747B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeepassSync.Core", "KeepassSync.Core\KeepassSync.Core.csproj", "{9413C936-B4CC-4816-AD0E-DB4719A0E778}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeepassSync.Business", "KeepassSync.Business\KeepassSync.Business.csproj", "{315854C7-5AFC-406E-BB49-9160DF88F3C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +16,13 @@ Global
 		{2D291083-5D15-4AAB-AEA4-B930B14747B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D291083-5D15-4AAB-AEA4-B930B14747B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D291083-5D15-4AAB-AEA4-B930B14747B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9413C936-B4CC-4816-AD0E-DB4719A0E778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9413C936-B4CC-4816-AD0E-DB4719A0E778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9413C936-B4CC-4816-AD0E-DB4719A0E778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9413C936-B4CC-4816-AD0E-DB4719A0E778}.Release|Any CPU.Build.0 = Release|Any CPU
+		{315854C7-5AFC-406E-BB49-9160DF88F3C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{315854C7-5AFC-406E-BB49-9160DF88F3C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{315854C7-5AFC-406E-BB49-9160DF88F3C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{315854C7-5AFC-406E-BB49-9160DF88F3C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

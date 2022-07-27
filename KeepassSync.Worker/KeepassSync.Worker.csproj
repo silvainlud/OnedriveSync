@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-KeepassSyncService-2E41669E-5D91-446D-A644-07A4715FF912</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <PackageId>KeepassSync.Worker</PackageId>
     </PropertyGroup>
 
     <ItemGroup>
