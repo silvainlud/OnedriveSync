@@ -16,5 +16,5 @@ public interface IFileManagerService
 	/// <param name="file">Chemin vers le fichier en ligne à récupérer</param>
 	/// <param name="destination">Emplacement local où le fichier sera copié</param>
 	/// <returns></returns>
-	public Task Download(string? file, string destination);
+	public Task<Stream?> Download(string? file, string destination);
 }

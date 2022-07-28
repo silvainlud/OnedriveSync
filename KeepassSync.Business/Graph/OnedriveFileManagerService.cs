@@ -67,7 +67,7 @@ public class OnedriveFileManagerService : IFileManagerService
 
 	}
 
-	public async Task Download(string? file, string destination)
+	public async Task<Stream?> Download(string? file, string destination)
 	{
 		DriveItem? driveItem;
 		try
@@ -90,19 +90,17 @@ public class OnedriveFileManagerService : IFileManagerService
 		if (driveItem == null)
 		{
 			_logger.LogWarning("Download failed from {SourceFile} to {TargetFile} : the file not exist on Onedrive", file, destination);
-			return;
+			return null;
 		}
 
 		var content = await _client.Me.Drive.Items[driveItem.Id].Content.Request().GetAsync();
 		if (content == null)
 		{
 			_logger.LogError("Download failed from {SourceFile} to {TargetFile} : the file has not content", file, destination);
-			return;
+			return null;
 		}
-
-		await using FileStream destinationStream = System.IO.File.Create(destination);
-
-		await content.CopyToAsync(destinationStream);
+		
 		_logger.LogInformation("Download complete from {SourceFile} to {TargetFile}", file, destination);
+		return content;
 	}
 }

@@ -10,8 +10,11 @@ public class Worker : BackgroundService
 	private readonly IFileBackupService _fileBackupService;
 
 	private readonly Dictionary<string, string?> _mappedTargetFiles;
+	private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-	static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
+	private int _numberProcessWaitingToUpload = 0;
+
+
 
 	public Worker(ILogger<Worker> logger, IFileManagerService fileManagerService, IFileBackupService fileBackupService, Dictionary<string, string?> mappedTargetFiles)
 	{
@@ -85,18 +88,30 @@ public class Worker : BackgroundService
 
 		if (source is FileSystemWatcher watcher)
 		{
-			if (_mappedTargetFiles.TryGetValue(e.FullPath, out var destination))
+			if (_mappedTargetFiles.TryGetValue(e.FullPath, out var destination) && destination != null)
 			{
 
 				_logger.LogInformation("Trigger File {File}", e.FullPath);
-				await Semaphore.WaitAsync();
+				_numberProcessWaitingToUpload++;
+				await _semaphore.WaitAsync();
+
 				try
 				{
-					watcher.EnableRaisingEvents = false;
 
 					await _fileManagerService.Upload(e.FullPath, destination);
-					Thread.Sleep(1000);
-					await _fileManagerService.Download(destination, e.FullPath);
+					
+					if (_numberProcessWaitingToUpload == 1)
+					{
+						Thread.Sleep(1000);
+						var stream = await _fileManagerService.Download(destination, e.FullPath);
+
+						if (stream != null)
+						{
+							watcher.EnableRaisingEvents = false;
+							await using FileStream destinationStream = File.Create(e.FullPath);
+							await stream.CopyToAsync(destinationStream);
+						}
+					}
 
 				}
 				catch (Exception exception)
@@ -105,7 +120,8 @@ public class Worker : BackgroundService
 				}
 				finally
 				{
-					Semaphore.Release();
+					_numberProcessWaitingToUpload--;
+					_semaphore.Release();
 					watcher.EnableRaisingEvents = true;
 				}
 
