@@ -12,8 +12,6 @@ public class Worker : BackgroundService
 	private readonly Dictionary<string, string?> _mappedTargetFiles;
 	private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-	private int _numberProcessWaitingToUpload = 0;
-
 
 
 	public Worker(ILogger<Worker> logger, IFileManagerService fileManagerService, IFileBackupService fileBackupService, Dictionary<string, string?> mappedTargetFiles)
@@ -92,37 +90,26 @@ public class Worker : BackgroundService
 			{
 
 				_logger.LogInformation("Trigger File {File}", e.FullPath);
-				_numberProcessWaitingToUpload++;
 				await _semaphore.WaitAsync();
 
 				try
 				{
-
 					await _fileManagerService.Upload(e.FullPath, destination);
-					
-					if (_numberProcessWaitingToUpload == 1)
-					{
-						Thread.Sleep(1000);
-						var stream = await _fileManagerService.Download(destination, e.FullPath);
-
-						if (stream != null)
-						{
-							watcher.EnableRaisingEvents = false;
-							await using FileStream destinationStream = File.Create(e.FullPath);
-							await stream.CopyToAsync(destinationStream);
-						}
-					}
-
 				}
 				catch (Exception exception)
 				{
 					Console.WriteLine(exception);
+					var stream = await _fileManagerService.Download(destination, e.FullPath);
+
+					if (stream != null)
+					{
+						await using FileStream destinationStream = File.Create(e.FullPath);
+						await stream.CopyToAsync(destinationStream);
+					}
 				}
 				finally
 				{
-					_numberProcessWaitingToUpload--;
 					_semaphore.Release();
-					watcher.EnableRaisingEvents = true;
 				}
 
 			}
@@ -135,12 +122,26 @@ public class Worker : BackgroundService
 		{
 			_logger.LogInformation("Stopping Service for file {InputFile}", fileWatcher.Path + "/" + fileWatcher.Filter);
 			fileWatcher.EnableRaisingEvents = false;
+
 		}
 
 		foreach (var (source, target) in _mappedTargetFiles)
 		{
 			if (File.Exists(source))
+			{
 				await _fileBackupService.Backup(source);
+				await _semaphore.WaitAsync();
+
+				var stream = await _fileManagerService.Download(target, source);
+
+				if (stream != null)
+				{
+					await using FileStream destinationStream = File.Create(source);
+					await stream.CopyToAsync(destinationStream);
+				}
+
+				_semaphore.Release();
+			}
 		}
 
 
