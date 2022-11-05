@@ -1,6 +1,6 @@
 # OnedriveSync
 
-Synchonization de fichier vers Onedrive.
+Synchonization de fichiers vers Onedrive.
 
 ## Fonctionnalités 
 
